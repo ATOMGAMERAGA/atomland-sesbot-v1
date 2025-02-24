@@ -54,5 +54,4 @@ client.on('messageCreate', async message => {
   }
 });
 
-client.login(process.env.BOT_T
-             OKEN);
+client.login(process.env.BOT_TOKEN);
