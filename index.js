@@ -1,8 +1,9 @@
 require('dotenv').config();
+const http = require('http');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
 
-// Sadece bu kullanıcı ID'si komut kullanabilsin
+// Sadece bu kullanıcı ID'sine sahip kişi komutları kullanabilsin
 const ALLOWED_USER_ID = "1051072781284016198";
 
 const client = new Client({
@@ -19,11 +20,10 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', async message => {
-  // Sadece izin verilen kullanıcı komutları çalıştırabilir
+  // Sadece izin verilen kullanıcı komutları çalıştırabilsin
   if (message.author.id !== ALLOWED_USER_ID) return;
 
   if (message.content === '!ses') {
-    // Kullanıcının bulunduğu ses kanalını alıyoruz
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) {
       return message.reply('Lütfen önce bir ses kanalına katılınız!');
@@ -51,7 +51,20 @@ client.on('messageCreate', async message => {
   } else if (message.content === '!ip') {
     // Sadece gülücük gönderme
     message.channel.send(':)');
+  } else if (message.content === '!ping') {
+    // !ping komutu: Ping değerini yanıt olarak gönderir.
+    message.channel.send(`Ping: ${client.ws.ping}ms`);
   }
 });
 
 client.login(process.env.BOT_TOKEN);
+
+// --- HTTP Sunucusu Başlatma ---
+// Render.com ortamında kullanılan PORT ortam değişkenini kullanıyoruz.
+const PORT = process.env.PORT || 443;
+http.createServer((req, res) => {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end("Bot is running!");
+}).listen(PORT, '0.0.0.0', () => {
+  console.log(`HTTP sunucusu ${PORT} portunda çalışıyor.`);
+});
